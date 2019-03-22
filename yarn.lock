@@ -1263,3 +1263,7 @@ yargs@12.0.5, yargs@^12.0.5:
     which-module "^2.0.0"
     y18n "^3.2.1 || ^4.0.0"
     yargs-parser "^11.1.1"
+
+yop-promises@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/yop-promises/-/yop-promises-1.3.0.tgz#3eeede12ca9d814fd5a36ffe02c62d25636b7868"

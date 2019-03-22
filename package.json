@@ -11,5 +11,8 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^6.0.2"
+  },
+  "dependencies": {
+    "yop-promises": "^1.3.0"
   }
 }
