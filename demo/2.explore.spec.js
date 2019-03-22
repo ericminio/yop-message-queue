@@ -1,8 +1,7 @@
 const { expect } = require('chai')
-const { request, createServer } = require('http')
 const { queue } = require('..')
 const { Client } = require('./support/client')
-const { registration, notification } = require('./support/exchanges')
+const { registration, notification, register, notify } = require('./support/exchanges')
 
 describe('message queue', ()=>{
 
@@ -16,36 +15,28 @@ describe('message queue', ()=>{
     })
 
     it('accepts registration', (done)=>{
-        var register = request(registration({ port:5003 }), (response)=>{
+        register({ subject:'weather', port:5003 }, (response)=>{
             expect(response.statusCode).to.equal(201)
 
-            var notify = request(notification, (response)=>{
+            notify({ subject:'weather', message:'clear' }, (response)=>{
                 expect(response.statusCode).to.equal(201)
 
                 expect(client.received).to.deep.equal({ subject:'weather', message:'clear' })
                 done()
             })
-            notify.end()
         })
-        register.end()
     })
     it('does not notify unregistered subject', (done)=>{
-        var register = request(registration({port:5003}), (response)=>{
+        register({ subject:'weather', port:5003 }, (response)=>{
             expect(response.statusCode).to.equal(201)
-            var notification = {
-                path:'/notify?subject=other&message=any',
-                method:'POST',
-                port:queue.port
-            }
-            var notify = request(notification, (response)=>{
+
+            notify({ subject:'other', message:'any'}, (response)=>{
                 expect(response.statusCode).to.equal(201)
 
                 expect(client.received).to.deep.equal(undefined)
                 done()
             })
-            notify.end()
         })
-        register.end()
     })
 
     describe('several clients', ()=>{
@@ -66,22 +57,19 @@ describe('message queue', ()=>{
         })
 
         it('can register to the same subject', (done)=>{
-            var register = request(registration({ port:5011 }), (response)=>{
-                var register = request(registration({ port:5012 }), (response)=>{
+            register({ subject:'weather', port:5011 }, (response)=>{
+                register({ subject:'weather', port:5012 }, (response)=>{
                     expect(response.statusCode).to.equal(201)
 
-                    var notify = request(notification, (response)=>{
+                    notify({ subject:'weather', message:'clear' }, (response)=>{
                         expect(response.statusCode).to.equal(201)
 
                         expect(one.received).to.deep.equal({ subject:'weather', message:'clear' })
                         expect(two.received).to.deep.equal({ subject:'weather', message:'clear' })
                         done()
                     })
-                    notify.end()
                 })
-                register.end()
             })
-            register.end()
         })
     })
 })
