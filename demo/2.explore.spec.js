@@ -7,6 +7,7 @@ describe('message queue', ()=>{
 
     var client
     beforeEach((done)=>{
+        queue.clearRegistrations()
         client = new Client({ port:5003 })
         client.start(done)
     })
