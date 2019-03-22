@@ -1,18 +1,17 @@
 const { request, createServer } = require('http')
-const { queue } = require('../..')
 
 var registration = function(options) {
     return {
         path:'/register?subject=' + options.subject + '&host=localhost&path=/&port='+options.port,
         method:'POST',
-        port:queue.port
+        port:5005
     }
 }
 var notification = function(options) {
     return {
         path:'/notify?subject=' + options.subject + '&message=' + options.message,
         method:'POST',
-        port:queue.port
+        port:5005
     }
 }
 var register = function(options, callback) {

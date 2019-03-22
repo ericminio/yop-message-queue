@@ -3,5 +3,11 @@ node_js:
   - "10.15.1"
 install:
   - yarn
+before_script:
+  - export PGHOST=localhost
+  - export PGDATABASE=queue
+  - export PGUSER=postgres
+  - export PGPASSWORD=
+  - createdb $PGDATABASE
 script:
   - npm run test

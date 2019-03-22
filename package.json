@@ -1,18 +1,20 @@
 {
-  "name": "yop-message-queue",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha demo/*.spec.js --exit"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "mocha": "^6.0.2"
-  },
-  "dependencies": {
-    "yop-promises": "^1.3.0"
-  }
+    "name": "yop-message-queue",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "pretest": "dropdb --if-exists queue -U postgres; createdb queue -U postgres",
+        "test": "mocha demo/*.spec.js --exit"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "mocha": "^6.0.2"
+    },
+    "dependencies": {
+        "yop-postgresql": "^1.1.0",
+        "yop-promises": "^1.3.0"
+    }
 }
