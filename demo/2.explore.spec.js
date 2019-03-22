@@ -2,19 +2,7 @@ const { expect } = require('chai')
 const { request, createServer } = require('http')
 const { queue } = require('..')
 const { Client } = require('./support/client')
-
-var registration = function(port) {
-    return {
-        path:'/register?subject=weather&host=localhost&path=/&port='+port,
-        method:'POST',
-        port:queue.port
-    }
-}
-var notification = {
-    path:'/notify?subject=weather&message=clear',
-    method:'POST',
-    port:queue.port
-}
+const { registration, notification } = require('./support/exchanges')
 
 describe('message queue', ()=>{
 
@@ -28,7 +16,7 @@ describe('message queue', ()=>{
     })
 
     it('accepts registration', (done)=>{
-        var register = request(registration(5003), (response)=>{
+        var register = request(registration({ port:5003 }), (response)=>{
             expect(response.statusCode).to.equal(201)
 
             var notify = request(notification, (response)=>{
@@ -42,7 +30,7 @@ describe('message queue', ()=>{
         register.end()
     })
     it('does not notify unregistered subject', (done)=>{
-        var register = request(registration(5003), (response)=>{
+        var register = request(registration({port:5003}), (response)=>{
             expect(response.statusCode).to.equal(201)
             var notification = {
                 path:'/notify?subject=other&message=any',
@@ -78,8 +66,8 @@ describe('message queue', ()=>{
         })
 
         it('can register to the same subject', (done)=>{
-            var register = request(registration(5011), (response)=>{
-                var register = request(registration(5012), (response)=>{
+            var register = request(registration({ port:5011 }), (response)=>{
+                var register = request(registration({ port:5012 }), (response)=>{
                     expect(response.statusCode).to.equal(201)
 
                     var notify = request(notification, (response)=>{
