@@ -17,9 +17,11 @@ describe('message queue', ()=>{
             expect(error).to.equal(undefined)
 
             queue = new Queue(5005)
-            queue.start(()=>{
-                client = new Client({ port:5003 })
-                client.start(done)
+            queue.clearRegistrations(()=>{
+                queue.start(()=>{
+                    client = new Client({ port:5003 })
+                    client.start(done)
+                })
             })
         })
     })
@@ -58,11 +60,12 @@ describe('message queue', ()=>{
 
         var one, two
         beforeEach((done)=>{
-            queue.clearRegistrations()
-            one = new Client({ port:5011 })
-            one.start(()=>{
-                two = new Client({ port:5012 })
-                two.start(done)
+            queue.clearRegistrations(()=>{
+                one = new Client({ port:5011 })
+                one.start(()=>{
+                    two = new Client({ port:5012 })
+                    two.start(done)
+                })
             })
         })
         afterEach((done)=>{
@@ -88,19 +91,16 @@ describe('message queue', ()=>{
         })
     })
 
-    describe('persistence', ()=>{
+    it('allows to stop and restart the queue without loosing registrations', (done)=>{
+        register({ subject:'weather', port:5003 }, (response)=>{
+            queue.stop(()=>{
+                queue = new Queue(5005)
+                queue.start(()=>{
+                    notify({ subject:'weather', message:'clear' }, (response)=>{
+                        expect(response.statusCode).to.equal(201)
 
-        it('allows to stop and restart the queue without loosing registrations', (done)=>{
-            register({ subject:'weather', port:5003 }, (response)=>{
-                queue.stop(()=>{
-                    queue = new Queue(5005)
-                    queue.start(()=>{
-                        notify({ subject:'weather', message:'clear' }, (response)=>{
-                            expect(response.statusCode).to.equal(201)
-
-                            expect(client.received).to.deep.equal({ subject:'weather', message:'clear' })
-                            done()
-                        })
+                        expect(client.received).to.deep.equal({ subject:'weather', message:'clear' })
+                        done()
                     })
                 })
             })
